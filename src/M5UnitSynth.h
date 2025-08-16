@@ -34,12 +34,21 @@
 
 class M5UnitSynth {
    private:
+    #if defined(PICO_RP2040) || defined(PICO_RP2350)
+    SerialUART *_serial;
+    #else
     HardwareSerial *_serial;
+    #endif
     void sendCMD(uint8_t *buffer, size_t size);
 
    public:
+    #if defined(PICO_RP2040)
+    void begin(SerialUART *serial = &Serial1, int baud = UNIT_SYNTH_BAUD,
+               uint8_t RX = 16, uint8_t TX = 17);
+    #else
     void begin(HardwareSerial *serial = &Serial1, int baud = UNIT_SYNTH_BAUD,
                uint8_t RX = 16, uint8_t TX = 17);
+    #endif
 
     void setInstrument(uint8_t bank, uint8_t channel, uint8_t value);
     void setNoteOn(uint8_t channel, uint8_t pitch, uint8_t velocity);

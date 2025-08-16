@@ -1,10 +1,20 @@
 #include "M5UnitSynth.h"
 
-void M5UnitSynth::begin(HardwareSerial *serial, int baud, uint8_t RX,
+#if defined(PICO_RP2040) || defined(PICO_RP2350)
+void M5UnitSynth::begin(SerialUART *serial, int baud, uint8_t RX,
                         uint8_t TX) {
     _serial = serial;
+    _serial->setRX(RX);
+    _serial->setTX(TX);
+    _serial->begin(baud, SERIAL_8N1);
+}
+#else
+void M5UnitSynth::begin(HardwareSerial *serial, int baud, uint8_t RX,
+                        uint8_t TX) {
+    _serial = serial;    
     _serial->begin(baud, SERIAL_8N1, RX, TX);
 }
+#endif
 
 void M5UnitSynth::sendCMD(uint8_t *buffer, size_t size) {
     _serial->write(buffer, size);
